@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -140,8 +139,12 @@ fun ResultScreen(
                 if (isUrl) {
                     Button(
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(result))
-                            context.startActivity(intent)
+                            try {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(result))
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Не удалось открыть ссылку", Toast.LENGTH_SHORT).show()
+                            }
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -175,11 +178,15 @@ fun ResultScreen(
 
                 FilledTonalButton(
                     onClick = {
-                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, result)
+                        try {
+                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, result)
+                            }
+                            context.startActivity(Intent.createChooser(shareIntent, "Поделиться"))
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Не удалось поделиться", Toast.LENGTH_SHORT).show()
                         }
-                        context.startActivity(Intent.createChooser(shareIntent, "Поделиться"))
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
